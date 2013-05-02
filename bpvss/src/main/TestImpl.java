@@ -63,4 +63,21 @@ public class TestImpl {
 
 	}
 
+	public static int[][] createCMatrix(int m, int n) {
+		int[][] res = new int[2][n];
+
+		for (int j = 0; j < n; j++) {
+			if ((j + 1) == m) {
+				res[0][j] = 1;
+				res[1][j] = 0;
+			} else {
+				res[0][j] = 0;
+				res[1][j] = 1;
+			}
+
+		}
+		return res;
+
+	}
+
 }
