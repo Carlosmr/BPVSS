@@ -1,4 +1,4 @@
-package main;
+package main.algorithm;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -11,65 +11,16 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
 
-public class TestImpl {
+public class BPVSS {
+	private String path;
+	private int n;
 
-	/**
-	 * @param args
-	 * @throws IOException
-	 */
-	public static void main(String[] args) throws IOException {
-
-		int R = 0;
-		int G = 0;
-		int B = 0;
-		int A = 0;
-		String path = "C:/Users/Carlos/Pictures/";
-		String image = "test.png";
-//
-//		BufferedImage bufferPlano = ImageIO.read(new File(path + "test.png"));
-//
-//		int height = bufferPlano.getHeight();
-//		int width = bufferPlano.getWidth();
-//
-//		BufferedImage bufferResult = new BufferedImage(width, height,
-//				BufferedImage.TYPE_INT_RGB);
-//
-//		for (int i = 0; i < width; i++) {
-//			for (int j = 0; j < height; j++) {
-//				int color = bufferPlano.getRGB(i, j);
-//				int newcolor = 0;
-//				R = (color) & 0xFF;
-//				G = (color >> 8) & 0xFF;
-//				B = (color >> 16) & 0xFF;
-//				A = (color >> 24) & 0xFF;
-//
-//				// Procesado
-//				R = 0;
-//				B = 0;
-//
-//				newcolor = (A << 24) | (B << 16) | (G << 8) | R;
-//				bufferResult.setRGB(i, j, newcolor);
-//			}
-//		}
-//
-//		Iterator<ImageWriter> writers = ImageIO
-//				.getImageWritersByFormatName("png");
-//		ImageWriter writer = (ImageWriter) writers.next();
-//		if (writer == null) {
-//			throw new RuntimeException("PNG not supported?!");
-//		}
-//
-//		ImageOutputStream out = ImageIO.createImageOutputStream(new File(path
-//				+ "Result.jpg"));
-//		writer.setOutput(out);
-//		writer.write(bufferResult);
-//		out.close();
-
-		BPVSS(path, image, 3);
+	public BPVSS(String path, int n) {
+		this.path = path;
+		this.n = n;
 	}
 
-	
-	public static void BPVSS(String path, String image, int n) {
+	public void noiseLikeShares(String image) {
 		BufferedImage bufferPlano;
 		try {
 			bufferPlano = ImageIO.read(new File(path + image));
@@ -89,9 +40,9 @@ public class TestImpl {
 					int[][] CMatrix;
 					if (color == 0) {
 						int m = i / split;
-						CMatrix = createCMatrix(m + 1, n);
+						CMatrix = createCMatrix(m + 1);
 					} else {
-						CMatrix = createCMatrix(0, n);
+						CMatrix = createCMatrix(0);
 					}
 					for (int l = 0; l < n; l++) {
 						int newcolor = CMatrix[k][l] * 255;
@@ -125,7 +76,7 @@ public class TestImpl {
 
 	}
 
-	public static int[][] createCMatrix(int m, int n) {
+	public int[][] createCMatrix(int m) {
 		int[][] res = new int[2][n];
 
 		for (int j = 0; j < n; j++) {
@@ -140,6 +91,44 @@ public class TestImpl {
 		}
 		return res;
 
+	}
+	
+	public void joinImages(String in1, String in2,
+			String res) {
+		try {
+			BufferedImage image1 = ImageIO.read(new File(path + in1));
+			BufferedImage image2 = ImageIO.read(new File(path + in2));
+			int height = image1.getHeight();
+			int width = image1.getWidth();
+			BufferedImage imageOut = new BufferedImage(width, height,
+					BufferedImage.TYPE_INT_RGB);
+			for (int i = 0; i < width; i++) {
+				for (int j = 0; j < height; j++) {
+					int color1 = image1.getRGB(i, j) & 0xFF;
+					int color2 = image2.getRGB(i, j) & 0xFF;
+					int color3 = color1 | color2;
+					int rgb = (color3 << 24) | (color3 << 16) | (color3 << 8)
+							| color3;
+					imageOut.setRGB(i, j, rgb);
+				}
+			}
+			Iterator<ImageWriter> writers = ImageIO
+					.getImageWritersByFormatName("png");
+			ImageWriter writer = (ImageWriter) writers.next();
+			if (writer == null) {
+				throw new RuntimeException("PNG not supported?!");
+			}
+
+			ImageOutputStream out = ImageIO.createImageOutputStream(new File(
+					path + res));
+			writer.setOutput(out);
+			writer.write(imageOut);
+			out.close();
+
+		} catch (IOException e) {
+			System.err.println("Error al leer los ficheros de entrada.");
+			e.printStackTrace();
+		}
 	}
 
 }
