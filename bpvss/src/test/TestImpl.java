@@ -12,13 +12,14 @@ public class TestImpl {
 
 		String path = "C:/Users/Carlos/Pictures/";
 		String image = "inicial.png";
+		String cover = "cover.png";
 		int n = 3;
 
 		BPVSS bpvss = new BPVSS(path, n);
 
-		bpvss.noiseLikeShares(image);
+		bpvss.meaningfulShares(image, cover);
+		//bpvss.noiselikeShares(image);
 		bpvss.joinImages("share0.png", "share1.png", "join1.png");
 		bpvss.joinImages("join1.png", "share2.png", "res.png");
 	}
-
 }

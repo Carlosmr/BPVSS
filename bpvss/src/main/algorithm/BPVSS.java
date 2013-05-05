@@ -20,7 +20,7 @@ public class BPVSS {
 		this.n = n;
 	}
 
-	public void noiseLikeShares(String image) {
+	public void noiselikeShares(String image) {
 		BufferedImage bufferPlano;
 		try {
 			bufferPlano = ImageIO.read(new File(path + image));
@@ -37,15 +37,15 @@ public class BPVSS {
 				for (int j = 0; j < height; j++) {
 					k = (int) (Math.random() * 2);
 					int color = bufferPlano.getRGB(i, j) & 0xFF;
-					int[][] CMatrix;
+					int[][] cMatrix;
 					if (color == 0) {
 						int m = i / split;
-						CMatrix = createCMatrix(m + 1);
+						cMatrix = createCMatrix(m + 1);
 					} else {
-						CMatrix = createCMatrix(0);
+						cMatrix = createCMatrix(0);
 					}
 					for (int l = 0; l < n; l++) {
-						int newcolor = CMatrix[k][l] * 255;
+						int newcolor = cMatrix[k][l] * 255;
 						int rgb = (newcolor << 24) | (newcolor << 16)
 								| (newcolor << 8) | newcolor;
 						shares.get(l).setRGB(i, j, rgb);
@@ -76,25 +76,127 @@ public class BPVSS {
 
 	}
 
+	public void meaningfulShares(String secret, String cover) {
+		BufferedImage secretimage, coverimage;
+		try {
+			secretimage = ImageIO.read(new File(path + secret));
+			coverimage = ImageIO.read(new File(path + cover));
+			List<BufferedImage> shares = new LinkedList<BufferedImage>();
+			int height = secretimage.getHeight();
+			int width = secretimage.getWidth();
+			int split = width / n;
+			int k;
+			for (int i = 0; i < n; i++)
+				shares.add(new BufferedImage(width, height,
+						BufferedImage.TYPE_INT_RGB));
+
+			for (int i = 0; i < width; i++) {
+				for (int j = 0; j < height; j++) {
+					k = (int) (Math.random() * 4);
+					int secretcolor = secretimage.getRGB(i, j) & 0xFF;
+					int covercolor = coverimage.getRGB(i, j) & 0xFF;
+					int[][] mMatrix;
+					int m = (i / split) + 1;
+					if (secretcolor == 0) {
+						if (covercolor == 0) {
+							mMatrix = createMMatrix(m, 3);
+						} else {
+							mMatrix = createMMatrix(m, 1);
+						}
+					} else {
+						if (covercolor == 0) {
+							mMatrix = createMMatrix(m, 2);
+						} else {
+							mMatrix = createMMatrix(m, 0);
+						}
+
+					}
+					for (int l = 0; l < n; l++) {
+						int newcolor = mMatrix[k][l] * 255;
+						int rgb = (newcolor << 24) | (newcolor << 16)
+								| (newcolor << 8) | newcolor;
+						shares.get(l).setRGB(i, j, rgb);
+					}
+				}
+			}
+
+			Iterator<ImageWriter> writers = ImageIO
+					.getImageWritersByFormatName("png");
+			ImageWriter writer = (ImageWriter) writers.next();
+			if (writer == null) {
+				throw new RuntimeException("PNG not supported?!");
+			}
+
+			for (int i = 0; i < n; i++) {
+				ImageOutputStream out = ImageIO
+						.createImageOutputStream(new File(path + "share" + i
+								+ ".png"));
+				writer.setOutput(out);
+				writer.write(shares.get(i));
+				out.close();
+			}
+
+		} catch (IOException e) {
+			System.err.println("Error al abrir la imagen de entrada.");
+			e.printStackTrace();
+		}
+	}
+
 	public int[][] createCMatrix(int m) {
 		int[][] res = new int[2][n];
 
-		for (int j = 0; j < n; j++) {
-			if ((j + 1) == m) {
-				res[0][j] = 1;
-				res[1][j] = 0;
+		for (int i = 0; i < n; i++) {
+			if ((i + 1) == m) {
+				res[0][i] = 1;
+				res[1][i] = 0;
 			} else {
-				res[0][j] = 0;
-				res[1][j] = 1;
+				res[0][i] = 0;
+				res[1][i] = 1;
 			}
-
+			if (m > n) {
+				res[0][i] = 1;
+				res[1][i] = 1;
+			}
 		}
 		return res;
 
 	}
-	
-	public void joinImages(String in1, String in2,
-			String res) {
+
+	public int[][] createMMatrix(int m, int k) {
+		int[][] res = new int[4][n];
+		int[][] c1;
+		int[][] c2;
+		switch (k) {
+		case 0:
+			c1 = createCMatrix(m);
+			c2 = createCMatrix(0);
+			break;
+		case 1:
+			c1 = createCMatrix(m);
+			c2 = createCMatrix(m);
+			break;
+		case 2:
+			c1 = createCMatrix(n + 1);
+			c2 = createCMatrix(0);
+			break;
+		default:
+			c1 = createCMatrix(n + 1);
+			c2 = createCMatrix(m);
+			break;
+		}
+		for (int i = 0; i < n; i++) {
+			res[0][i] = c1[0][i];
+			res[1][i] = c1[1][i];
+			res[2][i] = c2[0][i];
+			res[3][i] = c2[1][i];
+
+		}
+
+		return res;
+
+	}
+
+	public void joinImages(String in1, String in2, String res) {
 		try {
 			BufferedImage image1 = ImageIO.read(new File(path + in1));
 			BufferedImage image2 = ImageIO.read(new File(path + in2));
