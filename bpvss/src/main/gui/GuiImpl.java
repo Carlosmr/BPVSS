@@ -1,7 +1,6 @@
 package main.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -10,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.net.URL;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -173,11 +173,16 @@ public class GuiImpl extends JFrame {
 	public void menu() {
 
 		JMenuBar menuBar = new JMenuBar();
-		String pathIcon = "bpvss/src/resources/";
-		ImageIcon exitIcon = new ImageIcon(pathIcon + "exit.jpg");
-		ImageIcon loadSecret = new ImageIcon(pathIcon + "secret.jpg");
-		ImageIcon loadCover = new ImageIcon(pathIcon + "shield.jpg");
-		ImageIcon helpIcon = new ImageIcon(pathIcon + "help.jpg");
+		URL pathIcon = getClass().getResource("/resources/exit.jpg");
+		System.out.println(pathIcon);
+		ImageIcon exitIcon = new ImageIcon(getClass().getResource(
+				"/resources/exit.jpg"));
+		ImageIcon loadSecret = new ImageIcon(getClass().getResource(
+				"/resources/secret.jpg"));
+		ImageIcon loadCover = new ImageIcon(getClass().getResource(
+				"/resources/shield.jpg"));
+		ImageIcon helpIcon = new ImageIcon(getClass().getResource(
+				"/resources/help.jpg"));
 
 		JMenu file = new JMenu("Archivo");
 		file.setMnemonic(KeyEvent.VK_A);
