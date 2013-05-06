@@ -173,7 +173,7 @@ public class GuiImpl extends JFrame {
 	public void menu() {
 
 		JMenuBar menuBar = new JMenuBar();
-		String pathIcon = "C:/Users/Javier/icons/";
+		String pathIcon = "bpvss/src/resources/";
 		ImageIcon exitIcon = new ImageIcon(pathIcon + "exit.jpg");
 		ImageIcon loadSecret = new ImageIcon(pathIcon + "secret.jpg");
 		ImageIcon loadCover = new ImageIcon(pathIcon + "shield.jpg");
