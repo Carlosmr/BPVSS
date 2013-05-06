@@ -101,8 +101,9 @@ public class GuiImpl extends JFrame {
 									"El resultado ha sido guardado en "
 											+ pathSecret);
 						} catch (Exception e) {
-							JOptionPane.showMessageDialog(null,
-									"Por favor introduzca un número.");
+							JOptionPane
+									.showMessageDialog(null,
+											"Por favor introduzca un número válido mayor que 0");
 						}
 
 					}
@@ -124,8 +125,9 @@ public class GuiImpl extends JFrame {
 									"El resultado ha sido guardado en "
 											+ pathSecret);
 						} catch (Exception e) {
-							JOptionPane.showMessageDialog(null,
-									"Por favor introduzca un número.");
+							JOptionPane
+									.showMessageDialog(null,
+											"Por favor introduzca un número válido mayor que 0");
 						}
 
 					}
@@ -277,8 +279,7 @@ public class GuiImpl extends JFrame {
 			bpvss.noiselikeShares(secret);
 			shares(bpvss, n);
 		} else {
-			JOptionPane.showMessageDialog(null,
-					"Introduzca un número mayor que 0");
+			throw new IllegalArgumentException();
 		}
 
 	}
@@ -290,8 +291,7 @@ public class GuiImpl extends JFrame {
 			bpvss.meaningfulShares(secret, pathCover + cover);
 			shares(bpvss, n);
 		} else {
-			JOptionPane.showMessageDialog(null,
-					"Introduzca un número mayor que 0");
+			throw new IllegalArgumentException();
 		}
 	}
 
