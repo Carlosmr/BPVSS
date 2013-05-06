@@ -272,17 +272,27 @@ public class GuiImpl extends JFrame {
 
 	public void algorithmNoiseLike(JTextField input) {
 		Integer n = Integer.valueOf(input.getText());
-		BPVSS bpvss = new BPVSS(pathSecret, n);
-		bpvss.noiselikeShares(secret);
-		shares(bpvss, n);
+		if (n > 0) {
+			BPVSS bpvss = new BPVSS(pathSecret, n);
+			bpvss.noiselikeShares(secret);
+			shares(bpvss, n);
+		} else {
+			JOptionPane.showMessageDialog(null,
+					"Introduzca un número mayor que 0");
+		}
 
 	}
 
 	public void algorithmMeaningfulShares(JTextField input) {
 		Integer n = Integer.valueOf(input.getText());
-		BPVSS bpvss = new BPVSS(pathSecret, n);
-		bpvss.meaningfulShares(secret, pathCover + cover);
-		shares(bpvss, n);
+		if (n > 0) {
+			BPVSS bpvss = new BPVSS(pathSecret, n);
+			bpvss.meaningfulShares(secret, pathCover + cover);
+			shares(bpvss, n);
+		} else {
+			JOptionPane.showMessageDialog(null,
+					"Introduzca un número mayor que 0");
+		}
 	}
 
 	public void shares(BPVSS bpvss, Integer n) {
@@ -302,7 +312,9 @@ public class GuiImpl extends JFrame {
 	}
 
 	public static Boolean checkFormat(String picture) {
-		Boolean flag = picture.contains(".jpg") || picture.contains(".png");
+		Boolean flag = picture.contains(".jpg") || picture.contains(".png")
+				|| picture.contains(".JPG") || picture.contains(".PNG")
+				|| picture.contains(".jpeg") || picture.contains(".JPEG");
 		if (!flag) {
 			JOptionPane.showMessageDialog(null,
 					"Por favor introduzca una imagen jpg o png.");
