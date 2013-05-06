@@ -15,6 +15,7 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -28,11 +29,15 @@ import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
+import main.algorithm.BPVSS;
+
 public class GuiImpl extends JFrame {
 
 	private static final long serialVersionUID = -2301605985365458803L;
-	private String path = "";
-	private String name = "";
+	private String pathSecret = "";
+	private String pathCover = "";
+	private String secret = "";
+	private String cover = "";
 
 	public GuiImpl() {
 
@@ -62,13 +67,72 @@ public class GuiImpl extends JFrame {
 		JPanel participantPanel = new JPanel(new FlowLayout());
 		participantPanel.setBorder(BorderFactory
 				.createEmptyBorder(0, 25, 0, 25));
-		JLabel label = new JLabel("Participants");
-		JTextField input = new JTextField();
+		JLabel label = new JLabel("Participantes");
+		final JTextField input = new JTextField();
 		input.setPreferredSize(new Dimension(50, 20));
 		input.setEditable(true);
 
+		final String[] algorithms = { "Algoritmo noise-like",
+				"Algoritmo meaningful share" };
+		final JComboBox<String> comboBox = new JComboBox<String>(algorithms);
+		comboBox.setSelectedIndex(-1);
+		comboBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 25));
+
 		JPanel startPanel = new JPanel(new FlowLayout());
-		JButton startButton = new JButton("Start");
+		startPanel.setBorder(BorderFactory.createEmptyBorder(35, 0, 0, 0));
+		JButton startButton = new JButton("Ejecutar");
+
+		startButton.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent arg0) {
+
+				if (comboBox.getSelectedIndex() == -1) {
+					JOptionPane.showMessageDialog(null,
+							"Elija uno de los dos algoritmos.");
+				} else if (comboBox.getSelectedIndex() == 0) {
+					if (pathSecret.equals("") || secret.equals("")) {
+						JOptionPane
+								.showMessageDialog(null,
+										"Cargue la imagen secreta antes de ejecutar el algoritmo.");
+					} else {
+						try {
+							algorithmNoiseLike(input);
+							JOptionPane.showMessageDialog(null,
+									"El resultado ha sido guardado en "
+											+ pathSecret);
+						} catch (Exception e) {
+							JOptionPane.showMessageDialog(null,
+									"Por favor introduzca un número.");
+						}
+
+					}
+
+				} else {
+					if (pathSecret.equals("") || secret.equals("")) {
+						JOptionPane
+								.showMessageDialog(null,
+										"Cargue la imagen secreta antes de ejecutar el algoritmo.");
+					} else if (pathCover.equals("") || cover.equals("")) {
+						JOptionPane
+								.showMessageDialog(
+										null,
+										"Cargue la imagen de fondo para cubrir la secreta antes de ejecutar el algoritmo.");
+					} else {
+						try {
+							algorithmMeaningfulShares(input);
+							JOptionPane.showMessageDialog(null,
+									"El resultado ha sido guardado en "
+											+ pathSecret);
+						} catch (Exception e) {
+							JOptionPane.showMessageDialog(null,
+									"Por favor introduzca un número.");
+						}
+
+					}
+				}
+
+			}
+		});
 		startPanel.add(startButton);
 
 		JPanel textPanel = new JPanel(new BorderLayout());
@@ -76,40 +140,29 @@ public class GuiImpl extends JFrame {
 		JTextPane pane = new JTextPane();
 
 		pane.setContentType("text/html");
-		String text = "<p><b>BPVSS Algorithm</b></p>"
-				+ "<p>First of all, you must load a picture going to File > Load or pressing Ctrl-L. "
-				+ "After that, type a number of participants and click on start.</p>";
+		String text = "<b>Algoritmo BPVSS</b>"
+				+ "<p>Primero tiene que eligir el tipo de algoritmo que desea usar:<br>"
+				+ "<b>(1)Noise-like:</b> cargue la imagen secreta dirigiéndose a Archivo > Cargar imagen secreta o pulsando Ctrl-S.<br>"
+				+ "<b>(2)Meaningful share:</b> cargue la imagen secreta de la forma anterior y la imagen de fondo dirigiéndose a Archivo > Cargar imagen de fondo o pulsando Ctrl-F.</p> "
+				+ "<p>Finalmente introduzca el número de participantes y haga click en ejecutar.</p>";
 		pane.setText(text);
 		pane.setEditable(false);
 		textPanel.add(pane);
 
 		basic.add(textPanel);
 
+		participantPanel.add(comboBox);
 		participantPanel.add(label);
 		participantPanel.add(input);
 		startPanel.add(startButton);
 		buttonPanel.add(participantPanel, BorderLayout.NORTH);
 		buttonPanel.add(startPanel);
 		basic.add(buttonPanel);
-
-		// JPanel bottom = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		//
-		// JButton ntip = new JButton("Next Tip");
-		// ntip.setMnemonic(KeyEvent.VK_N);
-		// JButton close = new JButton("Close");
-		// close.setMnemonic(KeyEvent.VK_C);
-		//
-		// bottom.add(ntip);
-		// bottom.add(close);
-		// basic.add(bottom);
-		//
-		// bottom.setMaximumSize(new Dimension(450, 0));
-
 	}
 
 	public void messageExit() {
 		int confirmed = JOptionPane.showConfirmDialog(null,
-				"Are you sure you want to exit?", "Exit",
+				"¿Está seguro que desea salir?", "Salir",
 				JOptionPane.YES_NO_OPTION);
 
 		if (confirmed == JOptionPane.YES_OPTION) {
@@ -122,35 +175,81 @@ public class GuiImpl extends JFrame {
 		JMenuBar menuBar = new JMenuBar();
 		String pathIcon = "C:/Users/Javier/icons/";
 		ImageIcon exitIcon = new ImageIcon(pathIcon + "exit.jpg");
-		ImageIcon loadIcon = new ImageIcon(pathIcon + "open.jpg");
+		ImageIcon loadSecret = new ImageIcon(pathIcon + "secret.jpg");
+		ImageIcon loadCover = new ImageIcon(pathIcon + "shield.jpg");
+		ImageIcon helpIcon = new ImageIcon(pathIcon + "help.jpg");
 
-		JMenu file = new JMenu("File");
-		file.setMnemonic(KeyEvent.VK_F);
+		JMenu file = new JMenu("Archivo");
+		file.setMnemonic(KeyEvent.VK_A);
 
-		JMenuItem loadItem = new JMenuItem("Load", loadIcon);
-		loadItem.setMnemonic(KeyEvent.VK_L);
-		loadItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L,
+		JMenu help = new JMenu("Ayuda");
+		help.setMnemonic(KeyEvent.VK_H);
+		JMenuItem aboutItem = new JMenuItem("Sobre nosotros...", helpIcon);
+		aboutItem.setMnemonic(KeyEvent.VK_H);
+		aboutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H,
 				ActionEvent.CTRL_MASK));
-		loadItem.setToolTipText("Load a picture");
+		aboutItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				JOptionPane.showMessageDialog(null,
+						"Trabajo de Criptografía 5 curso 2012/2013\n"
+								+ "Autores:\n" + "Javier Herrera Copano\n"
+								+ "Carlos Muñoz Rodríguez\n"
+								+ "Luis Manuel Sayago López\n");
+			}
+		});
+
+		JMenuItem loadItem = new JMenuItem("Cargar imagen secreta", loadSecret);
+		loadItem.setMnemonic(KeyEvent.VK_S);
+		loadItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
+				ActionEvent.CTRL_MASK));
+		loadItem.setToolTipText("Cargue la imagen secreta");
 		loadItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				JFileChooser fc = new JFileChooser();
 				int returnVal = fc.showOpenDialog(null);
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					File file = fc.getSelectedFile();
-					path = file.getParent();
-					name = file.getName();
-					System.out.println(path);
-					System.out.println(name);
+					String tmpSecret = file.getName();
+					if (checkFormat(tmpSecret)) {
+						pathSecret = file.getParent().replace("\\", "/") + "/";
+						secret = file.getName();
+						System.out.println(pathSecret);
+						System.out.println(secret);
+					}
+
 				}
 			}
 		});
 
-		JMenuItem exitItem = new JMenuItem("Exit", exitIcon);
+		JMenuItem loadCoverItem = new JMenuItem("Cargar imagen de fondo",
+				loadCover);
+		loadCoverItem.setMnemonic(KeyEvent.VK_F);
+		loadCoverItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F,
+				ActionEvent.CTRL_MASK));
+		loadCoverItem.setToolTipText("Cargue la imagen para cubrir la secreta");
+		loadCoverItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				JFileChooser fc = new JFileChooser();
+				int returnVal = fc.showOpenDialog(null);
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					File file = fc.getSelectedFile();
+					String tmpCover = file.getName();
+					if (checkFormat(tmpCover)) {
+						pathCover = file.getParent().replace("\\", "/") + "/";
+						cover = file.getName();
+						System.out.println(pathCover);
+						System.out.println(cover);
+					}
+
+				}
+			}
+		});
+
+		JMenuItem exitItem = new JMenuItem("Salir", exitIcon);
 		exitItem.setMnemonic(KeyEvent.VK_E);
 		exitItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E,
 				ActionEvent.CTRL_MASK));
-		exitItem.setToolTipText("Exit application");
+		exitItem.setToolTipText("Salga de la aplicación");
 		exitItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				messageExit();
@@ -158,9 +257,52 @@ public class GuiImpl extends JFrame {
 		});
 
 		file.add(loadItem);
+		file.add(loadCoverItem);
 		file.add(exitItem);
+		help.add(aboutItem);
 		menuBar.add(file);
+		menuBar.add(help);
 		setJMenuBar(menuBar);
+	}
+
+	public void algorithmNoiseLike(JTextField input) {
+		Integer n = Integer.valueOf(input.getText());
+		BPVSS bpvss = new BPVSS(pathSecret, n);
+		bpvss.noiselikeShares(secret);
+		shares(bpvss, n);
+
+	}
+
+	public void algorithmMeaningfulShares(JTextField input) {
+		Integer n = Integer.valueOf(input.getText());
+		BPVSS bpvss = new BPVSS(pathSecret, n);
+		bpvss.meaningfulShares(secret, pathCover + cover);
+		shares(bpvss, n);
+	}
+
+	public void shares(BPVSS bpvss, Integer n) {
+		for (int i = 0; i < n - 1; i++) {
+			if (i == 0) {
+				bpvss.joinImages("share0.png", "share1.png", "join1.png");
+			} else {
+				if (i == n - 2) {
+					bpvss.joinImages("join" + i + ".png", "share" + (i + 1)
+							+ ".png", "res.png");
+				} else {
+					bpvss.joinImages("join" + i + ".png", "share" + (i + 1)
+							+ ".png", "join" + (i + 1) + ".png");
+				}
+			}
+		}
+	}
+
+	public static Boolean checkFormat(String picture) {
+		Boolean flag = picture.contains(".jpg") || picture.contains(".png");
+		if (!flag) {
+			JOptionPane.showMessageDialog(null,
+					"Por favor introduzca una imagen jpg o png.");
+		}
+		return flag;
 	}
 
 	public static void main(String[] args) {

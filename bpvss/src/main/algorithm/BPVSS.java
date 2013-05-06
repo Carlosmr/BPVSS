@@ -80,7 +80,7 @@ public class BPVSS {
 		BufferedImage secretimage, coverimage;
 		try {
 			secretimage = ImageIO.read(new File(path + secret));
-			coverimage = ImageIO.read(new File(path + cover));
+			coverimage = ImageIO.read(new File(cover));
 			List<BufferedImage> shares = new LinkedList<BufferedImage>();
 			int height = secretimage.getHeight();
 			int width = secretimage.getWidth();
