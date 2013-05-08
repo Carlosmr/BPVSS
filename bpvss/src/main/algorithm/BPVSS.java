@@ -147,11 +147,11 @@ public class BPVSS {
 
 		for (int i = 0; i < n; i++) {
 			if ((i + 1) == m) {
-				res[0][i] = 1;
-				res[1][i] = 0;
-			} else {
 				res[0][i] = 0;
 				res[1][i] = 1;
+			} else {
+				res[0][i] = 1;
+				res[1][i] = 0;
 			}
 			if (m > n) {
 				res[0][i] = 1;
@@ -198,8 +198,8 @@ public class BPVSS {
 
 	public void joinImages(String in1, String in2, String res) {
 		try {
-			BufferedImage image1 = ImageIO.read(new File(path + in1));
-			BufferedImage image2 = ImageIO.read(new File(path + in2));
+			BufferedImage image1 = ImageIO.read(new File(in1));
+			BufferedImage image2 = ImageIO.read(new File(in2));
 			int height = image1.getHeight();
 			int width = image1.getWidth();
 			BufferedImage imageOut = new BufferedImage(width, height,
