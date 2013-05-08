@@ -129,6 +129,9 @@ public class GuiImpl extends JFrame {
 				BPVSS bpvss = new BPVSS(pathUnion1, 3);
 				bpvss.joinImages(pathUnion1 + union1, pathUnion2 + union2,
 						"joinShare.png");
+				JOptionPane.showMessageDialog(null,
+						"Unión de las shares correctamente. Resultado en "
+								+ pathUnion1);
 
 			}
 		});
@@ -190,7 +193,7 @@ public class GuiImpl extends JFrame {
 		startPanel.add(startButton);
 
 		JPanel textPanel = new JPanel(new BorderLayout());
-		textPanel.setBorder(BorderFactory.createEmptyBorder(15, 25, 15, 25));
+		textPanel.setBorder(BorderFactory.createEmptyBorder(15, 25, 0, 25));
 		JTextPane pane = new JTextPane();
 
 		pane.setContentType("text/html");
@@ -198,7 +201,8 @@ public class GuiImpl extends JFrame {
 				+ "<p>Primero tiene que eligir el tipo de algoritmo que desea usar:<br>"
 				+ "<b>(1)Noise-like:</b> cargue la imagen secreta dirigiéndose a Archivo > Cargar imagen secreta o pulsando Ctrl-S.<br>"
 				+ "<b>(2)Meaningful share:</b> cargue la imagen secreta de la forma anterior y la imagen de fondo dirigiéndose a Archivo > Cargar imagen de fondo o pulsando Ctrl-F.</p> "
-				+ "<p>Finalmente introduzca el número de participantes y haga click en ejecutar.</p>";
+				+ "<p>Finalmente introduzca el número de participantes y haga click en ejecutar."
+				+ " \"Unir shares\" permite apilar dos shares para ver el secreto que esconden.</p>";
 		pane.setText(text);
 		pane.setEditable(false);
 		textPanel.add(pane);
