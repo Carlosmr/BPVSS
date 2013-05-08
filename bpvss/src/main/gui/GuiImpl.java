@@ -38,6 +38,10 @@ public class GuiImpl extends JFrame {
 	private String pathCover = "";
 	private String secret = "";
 	private String cover = "";
+	private String pathUnion1 = "";
+	private String union1 = "";
+	private String pathUnion2 = "";
+	private String union2 = "";
 
 	public GuiImpl() {
 
@@ -68,6 +72,7 @@ public class GuiImpl extends JFrame {
 		participantPanel.setBorder(BorderFactory
 				.createEmptyBorder(0, 25, 0, 25));
 		JLabel label = new JLabel("Participantes");
+		label.setToolTipText("Número de participantes");
 		final JTextField input = new JTextField();
 		input.setPreferredSize(new Dimension(50, 20));
 		input.setEditable(true);
@@ -76,11 +81,57 @@ public class GuiImpl extends JFrame {
 				"Algoritmo meaningful share" };
 		final JComboBox<String> comboBox = new JComboBox<String>(algorithms);
 		comboBox.setSelectedIndex(-1);
+		comboBox.setToolTipText("Algoritmo para ocultar la imagen");
 		comboBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 25));
 
 		JPanel startPanel = new JPanel(new FlowLayout());
 		startPanel.setBorder(BorderFactory.createEmptyBorder(35, 0, 0, 0));
 		JButton startButton = new JButton("Ejecutar");
+		JButton joinButton = new JButton("Unir shares");
+		startButton.setToolTipText("Ejecutar el algoritmo seleccionado");
+		joinButton.setToolTipText("Unir dos shares para obtener el descifrado");
+
+		joinButton.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent arg0) {
+
+				JFileChooser fc = new JFileChooser();
+				int returnVal = fc.showOpenDialog(null);
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					File file = fc.getSelectedFile();
+					String tmpCover = file.getName();
+					if (checkFormat(tmpCover)) {
+						pathUnion1 = file.getParent().replace("\\", "/") + "/";
+						union1 = file.getName();
+						System.out.println(pathUnion1);
+						System.out.println(union1);
+						JOptionPane
+								.showMessageDialog(null,
+										"Primera share a unir cargada correctamente.Cargue la segunda share.");
+					}
+
+				}
+
+				returnVal = fc.showOpenDialog(null);
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					File file = fc.getSelectedFile();
+					String tmpCover = file.getName();
+					if (checkFormat(tmpCover)) {
+						pathUnion2 = file.getParent().replace("\\", "/") + "/";
+						union2 = file.getName();
+						System.out.println(pathUnion2);
+						System.out.println(union2);
+						JOptionPane.showMessageDialog(null,
+								"Segunda share a unir cargada correctamente.");
+					}
+
+				}
+				BPVSS bpvss = new BPVSS(pathUnion1, 3);
+				bpvss.joinImages(pathUnion1 + union1, pathUnion2 + union2,
+						"joinShare.png");
+
+			}
+		});
 
 		startButton.addActionListener(new ActionListener() {
 
@@ -135,6 +186,7 @@ public class GuiImpl extends JFrame {
 
 			}
 		});
+		startPanel.add(joinButton);
 		startPanel.add(startButton);
 
 		JPanel textPanel = new JPanel(new BorderLayout());
@@ -222,6 +274,9 @@ public class GuiImpl extends JFrame {
 						secret = file.getName();
 						System.out.println(pathSecret);
 						System.out.println(secret);
+						JOptionPane.showMessageDialog(null,
+								"Imagen secreta cargada correctamente");
+
 					}
 
 				}
@@ -246,6 +301,8 @@ public class GuiImpl extends JFrame {
 						cover = file.getName();
 						System.out.println(pathCover);
 						System.out.println(cover);
+						JOptionPane.showMessageDialog(null,
+								"Imagen de fondo cargada correctamente.");
 					}
 
 				}
@@ -278,6 +335,7 @@ public class GuiImpl extends JFrame {
 			BPVSS bpvss = new BPVSS(pathSecret, n);
 			bpvss.noiselikeShares(secret);
 			shares(bpvss, n);
+
 		} else {
 			throw new IllegalArgumentException();
 		}
