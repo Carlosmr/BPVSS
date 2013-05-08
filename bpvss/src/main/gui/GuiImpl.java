@@ -42,8 +42,15 @@ public class GuiImpl extends JFrame {
 	private String union1 = "";
 	private String pathUnion2 = "";
 	private String union2 = "";
+	// private String pathResult = "C:/Users/Javier/Pictures/";
+	private String pathResult = "";
 
 	public GuiImpl() {
+
+		String env = System.getenv("UserProfile");
+		System.out.println(env);
+		env.replace("\\", "/");
+		pathResult = env+"/Pictures/";
 
 		menu();
 		init();
@@ -95,7 +102,7 @@ public class GuiImpl extends JFrame {
 
 			public void actionPerformed(ActionEvent arg0) {
 
-				JFileChooser fc = new JFileChooser();
+				JFileChooser fc = new JFileChooser(pathResult);
 				int returnVal = fc.showOpenDialog(null);
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					File file = fc.getSelectedFile();
@@ -110,29 +117,30 @@ public class GuiImpl extends JFrame {
 										"Primera share a unir cargada correctamente.Cargue la segunda share.");
 					}
 
-				}
+					returnVal = fc.showOpenDialog(null);
+					if (returnVal == JFileChooser.APPROVE_OPTION) {
+						File file2 = fc.getSelectedFile();
+						String tmpCover2 = file2.getName();
+						if (checkFormat(tmpCover2)) {
+							pathUnion2 = file2.getParent().replace("\\", "/")
+									+ "/";
+							union2 = file2.getName();
+							System.out.println(pathUnion2);
+							System.out.println(union2);
+							JOptionPane
+									.showMessageDialog(null,
+											"Segunda share a unir cargada correctamente.");
+						}
 
-				returnVal = fc.showOpenDialog(null);
-				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					File file = fc.getSelectedFile();
-					String tmpCover = file.getName();
-					if (checkFormat(tmpCover)) {
-						pathUnion2 = file.getParent().replace("\\", "/") + "/";
-						union2 = file.getName();
-						System.out.println(pathUnion2);
-						System.out.println(union2);
+						BPVSS bpvss = new BPVSS(pathUnion1, pathResult, 3);
+						bpvss.joinImages(pathUnion1 + union1, pathUnion2
+								+ union2, "joinShare.png");
 						JOptionPane.showMessageDialog(null,
-								"Segunda share a unir cargada correctamente.");
+								"Unión de las shares correctamente. Resultado en "
+										+ pathUnion1);
+
 					}
-
 				}
-				BPVSS bpvss = new BPVSS(pathUnion1, 3);
-				bpvss.joinImages(pathUnion1 + union1, pathUnion2 + union2,
-						"joinShare.png");
-				JOptionPane.showMessageDialog(null,
-						"Unión de las shares correctamente. Resultado en "
-								+ pathUnion1);
-
 			}
 		});
 
@@ -153,7 +161,7 @@ public class GuiImpl extends JFrame {
 							algorithmNoiseLike(input);
 							JOptionPane.showMessageDialog(null,
 									"El resultado ha sido guardado en "
-											+ pathSecret);
+											+ pathResult);
 						} catch (Exception e) {
 							JOptionPane
 									.showMessageDialog(null,
@@ -177,7 +185,7 @@ public class GuiImpl extends JFrame {
 							algorithmMeaningfulShares(input);
 							JOptionPane.showMessageDialog(null,
 									"El resultado ha sido guardado en "
-											+ pathSecret);
+											+ pathResult);
 						} catch (Exception e) {
 							JOptionPane
 									.showMessageDialog(null,
@@ -268,7 +276,9 @@ public class GuiImpl extends JFrame {
 		loadItem.setToolTipText("Cargue la imagen secreta");
 		loadItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				JFileChooser fc = new JFileChooser();
+
+				JFileChooser fc = new JFileChooser(
+						"bpvss/src/resources/testImages");
 				int returnVal = fc.showOpenDialog(null);
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					File file = fc.getSelectedFile();
@@ -295,7 +305,8 @@ public class GuiImpl extends JFrame {
 		loadCoverItem.setToolTipText("Cargue la imagen para cubrir la secreta");
 		loadCoverItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				JFileChooser fc = new JFileChooser();
+				JFileChooser fc = new JFileChooser(
+						"bpvss/src/resources/testImages");
 				int returnVal = fc.showOpenDialog(null);
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					File file = fc.getSelectedFile();
@@ -336,7 +347,7 @@ public class GuiImpl extends JFrame {
 	public void algorithmNoiseLike(JTextField input) {
 		Integer n = Integer.valueOf(input.getText());
 		if (n > 0) {
-			BPVSS bpvss = new BPVSS(pathSecret, n);
+			BPVSS bpvss = new BPVSS(pathSecret, pathResult, n);
 			bpvss.noiselikeShares(secret);
 			shares(bpvss, n);
 
@@ -349,7 +360,7 @@ public class GuiImpl extends JFrame {
 	public void algorithmMeaningfulShares(JTextField input) {
 		Integer n = Integer.valueOf(input.getText());
 		if (n > 0) {
-			BPVSS bpvss = new BPVSS(pathSecret, n);
+			BPVSS bpvss = new BPVSS(pathSecret, pathResult, n);
 			bpvss.meaningfulShares(secret, pathCover + cover);
 			shares(bpvss, n);
 		} else {
@@ -360,14 +371,16 @@ public class GuiImpl extends JFrame {
 	public void shares(BPVSS bpvss, Integer n) {
 		for (int i = 0; i < n - 1; i++) {
 			if (i == 0) {
-				bpvss.joinImages("share0.png", "share1.png", "join1.png");
+				bpvss.joinImages(pathResult + "share0.png", pathResult
+						+ "share1.png", "join1.png");
 			} else {
 				if (i == n - 2) {
-					bpvss.joinImages("join" + i + ".png", "share" + (i + 1)
-							+ ".png", "res.png");
+					bpvss.joinImages(pathResult + "join" + i + ".png",
+							pathResult + "share" + (i + 1) + ".png", "res.png");
 				} else {
-					bpvss.joinImages("join" + i + ".png", "share" + (i + 1)
-							+ ".png", "join" + (i + 1) + ".png");
+					bpvss.joinImages(pathResult + "join" + i + ".png",
+							pathResult + "share" + (i + 1) + ".png", "join"
+									+ (i + 1) + ".png");
 				}
 			}
 		}

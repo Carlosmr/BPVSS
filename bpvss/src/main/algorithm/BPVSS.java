@@ -14,10 +14,12 @@ import javax.imageio.stream.ImageOutputStream;
 public class BPVSS {
 	private String path;
 	private int n;
+	private String pathResult;
 
-	public BPVSS(String path, int n) {
+	public BPVSS(String path, String pathResult, int n) {
 		this.path = path;
 		this.n = n;
+		this.pathResult = pathResult;
 	}
 
 	public void noiselikeShares(String image) {
@@ -62,8 +64,8 @@ public class BPVSS {
 
 			for (int i = 0; i < n; i++) {
 				ImageOutputStream out = ImageIO
-						.createImageOutputStream(new File(path + "share" + i
-								+ ".png"));
+						.createImageOutputStream(new File(pathResult + "share"
+								+ i + ".png"));
 				writer.setOutput(out);
 				writer.write(shares.get(i));
 				out.close();
@@ -129,8 +131,8 @@ public class BPVSS {
 
 			for (int i = 0; i < n; i++) {
 				ImageOutputStream out = ImageIO
-						.createImageOutputStream(new File(path + "share" + i
-								+ ".png"));
+						.createImageOutputStream(new File(pathResult + "share"
+								+ i + ".png"));
 				writer.setOutput(out);
 				writer.write(shares.get(i));
 				out.close();
@@ -222,7 +224,7 @@ public class BPVSS {
 			}
 
 			ImageOutputStream out = ImageIO.createImageOutputStream(new File(
-					path + res));
+					pathResult+res));
 			writer.setOutput(out);
 			writer.write(imageOut);
 			out.close();
