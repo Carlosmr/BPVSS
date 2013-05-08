@@ -50,7 +50,7 @@ public class GuiImpl extends JFrame {
 		String env = System.getenv("UserProfile");
 		System.out.println(env);
 		env.replace("\\", "/");
-		pathResult = env+"/Pictures/";
+		pathResult = env + "/Pictures/";
 
 		menu();
 		init();
@@ -135,9 +135,11 @@ public class GuiImpl extends JFrame {
 						BPVSS bpvss = new BPVSS(pathUnion1, pathResult, 3);
 						bpvss.joinImages(pathUnion1 + union1, pathUnion2
 								+ union2, "joinShare.png");
-						JOptionPane.showMessageDialog(null,
-								"Unión de las shares correctamente. Resultado en "
-										+ pathUnion1);
+//						JOptionPane.showMessageDialog(null,
+//								"Unión de las shares correctamente. Resultado en "
+//										+ pathUnion1);
+						ResultJoin result = new ResultJoin(pathUnion1);
+						result.run();
 
 					}
 				}
@@ -276,9 +278,8 @@ public class GuiImpl extends JFrame {
 		loadItem.setToolTipText("Cargue la imagen secreta");
 		loadItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-
-				JFileChooser fc = new JFileChooser(
-						"bpvss/src/resources/testImages");
+				
+				JFileChooser fc = new JFileChooser("bpvss/src/resources/testImages");
 				int returnVal = fc.showOpenDialog(null);
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					File file = fc.getSelectedFile();
